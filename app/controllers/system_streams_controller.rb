@@ -6,14 +6,15 @@ class SystemStreamsController < ApplicationController
 
   def events
     response.headers["Content-Type"] = "text/event-stream"
-    system('mkdir pippo')
-    3.times {
-      response.stream.write "data: Hello, browser!...\n\n"
-      sleep 2
-    }
+    pipe = IO.popen("ls -1")
+    while(line = pipe.gets)
+      response.stream.write "data: #{line}\n\n"
+      sleep 0.5
+    end
   rescue IOError
     logger.error "Stream error"
   ensure
+    pipe.close
     response.stream.close
     logger.info "Stream closed"
   end
