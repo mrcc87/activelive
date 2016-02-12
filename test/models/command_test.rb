@@ -1,6 +1,6 @@
 require 'test_helper'
 
-class SystemStreamsControllerTest < ActionController::TestCase
+class CommandTest < ActiveSupport::TestCase
   # test "the truth" do
   #   assert true
   # end
