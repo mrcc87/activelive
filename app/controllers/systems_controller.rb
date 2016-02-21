@@ -17,13 +17,20 @@ class SystemsController < ApplicationController
       multi.get("command")
       multi.del("command")
     end
+    pipe = IO.popen
     logger.info command.inspect
-    if command.first
-      response.stream.write "data: #{command.first}\n\n"
+    ex = command.first
+    if ex
+      pipe(ex)
+      while(line = pipe.gets)
+        response.stream.write "data: #{line}\n\n"
+        sleep 0.5
+      end
     end
   rescue IOError
     logger.error "AN ERROR HAS OCCURED..."
   ensure
+    pipe.close unless pipe.nil?
     logger.info "quitting redis"
     redis_cli.quit
     logger.info "closing stream"
